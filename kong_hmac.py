@@ -26,7 +26,7 @@ def get_headers_string(signature_headers):
 
 def get_signature_string(signature_headers):
     sig_string = ""
-    for key, value in signature_headers.iteritems():
+    for key, value in list(signature_headers.items()):
         if sig_string != "":
             sig_string += "\n"
         if key.lower() == "request-line":
@@ -42,8 +42,8 @@ def md5_hash_base64(string_to_hash):
     return base64.b64encode(m.digest())
 
 
-def sha1_hash_base64(string_to_hash, secret):
-    h = hmac.new(secret, (string_to_hash).encode("utf-8"), hashlib.sha1)
+def sha256_hash_base64(string_to_hash, secret):
+    h = hmac.new(secret, (string_to_hash).encode("utf-8"), hashlib.sha256)
     return base64.b64encode(h.digest())
 
 
@@ -53,7 +53,7 @@ def generate_request_headers(key_id, secret, url, data=None, content_type=None):
         'hmac username="{}",algorithm="{}",headers="{}",signature="{}"'
     )
     # Set the signature hash algorithm
-    algorithm = "hmac-sha1"
+    algorithm = "hmac-sha256"
     # Set the date header
     date_header = create_date_header()
     # Set headers for the signature hash
@@ -85,10 +85,10 @@ def generate_request_headers(key_id, secret, url, data=None, content_type=None):
     # Build the signature string
     signature_string = get_signature_string(signature_headers)
     # Hash the signature string using the specified algorithm
-    signature_hash = sha1_hash_base64(signature_string, secret)
+    signature_hash = sha256_hash_base64(signature_string, secret)
     # Format the authorization header
     auth_header = auth_header_template.format(
-        key_id, algorithm, headers, signature_hash
+        key_id, algorithm, headers, signature_hash.decode('utf-8')
     )
 
     if request_method == "GET":
@@ -103,3 +103,4 @@ def generate_request_headers(key_id, secret, url, data=None, content_type=None):
         }
 
     return request_headers
+

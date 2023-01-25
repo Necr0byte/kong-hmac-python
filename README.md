@@ -12,12 +12,12 @@ from kong_hmac import generate_request_headers
 import requests
 
 key_id = 'my-key-id'
-secret = 'my-secret'
+secret = b'my-secret'
 url = 'https://example.com/api/resource'
 get_request_headers = generate_request_headers(key_id, secret, url)
 r = requests.get(url, headers=get_request_headers)
-print 'Response code: %d\n' % r.status_code
-print r.text
+print ('Response code: %d\n' % r.status_code)
+print (r.text)
 ```  
 POST request:
 ```python
@@ -25,14 +25,14 @@ from kong_hmac import generate_request_headers
 import request
 
 key_id = 'my-key-id'
-secret = 'my-secret'
+secret = b'my-secret'
 url = 'https://example.com/api/resource'
 content_type = 'application/json'
 payload = open('payload.json', 'r').read()
 post_request_headers = generate_request_headers(key_id, secret, url, payload, content_type)
 r = requests.post(url, headers=post_request_headers, data=payload)
-print 'Response code: %d\n' % r.status_code
-print r.text
+print ('Response code: %d\n' % r.status_code)
+print (r.text)
 ```
 payload.json:
 ```json
